@@ -23,14 +23,11 @@ slope = df['slope']
 ca = df['ca']
 thal = df['thal']
 target = df['target']
-# X = [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
-# Y = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+########################################################### 1
 Y = df.iloc[0:trainIndex, [13]]
 X = df.iloc[0:trainIndex, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]]
-
 clf = tree.DecisionTreeClassifier()
 clf = clf.fit(X, Y)
-#print(clf.predict([[62, 0, 0, 138, 294, 1, 1, 106, 0, 1.9, 1, 3, 2]]))
 #########################   TEST ##########################
 right = 0
 wrong = 0
@@ -103,24 +100,18 @@ for k in range(0, 13):
         c = c.fit(X1, Y1)
         groupsCLF.append(c)
     #########################   TEST ##########################
-    right = 0
-    wrong = 0
+    predicted = []
     for i in range(testIndex, len(age)):
-        b = []
+        predicts = []
         for j in range(0, 5):
-            a = groupsCLF[j].predict([(testDF.drop([test[0]], axis=1)).loc[i]])
-            b.append(a)
-        b = np.array(b)
-        if(np.mean(b)>0.5 and target[i] == 1):
-            right+=1
-        if(np.mean(b)<0.5 and target[i] == 0):
-            right+=1
-        if(np.mean(b)>0.5 and target[i] == 0):
-            wrong+=1
-        if(np.mean(b)<0.5 and target[i] == 1):
-            wrong+=1
-    print(droped, right, wrong)
-    print(right/(right+wrong))
+            predict = groupsCLF[j].predict([(testDF.drop([test[0]], axis=1)).loc[i]])
+            predicts.append(predict)
+        predicts = np.array(predicts)
+        if(np.mean(predicts)>0.5):
+            predicted.append(1)
+        if(np.mean(predicts)<0.5):
+            predicted.append(0)
+    accuracy = accuracy_score(df.iloc[testIndex:len(age), [13]], predicted)
     ###########################################################
     features.append(k)
     test.append(droped)
@@ -141,21 +132,15 @@ Y = df1.iloc[:, [13]]
 clf = tree.DecisionTreeClassifier()
 clf = clf.fit(X, Y)
 #########################   TEST ##########################
-right = 0
-wrong = 0
+predicted = []
 for i in range(testIndex, len(age)):
     predict = clf.predict([(testDF.drop(toDrop, axis=1)).loc[i]])
-    if(predict>0.5 and target[i] == 1):
-        right+=1
-    if(predict<0.5 and target[i] == 0):
-        right+=1
-    if(predict>0.5 and target[i] == 0):
-        wrong+=1
-    if(predict<0.5 and target[i] == 1):
-        wrong+=1
-print(right, wrong)
-print(right/(right+wrong))
-###########################################################
+    if(predict>0.5):
+        predicted.append(1)
+    if(predict<0.5):
+        predicted.append(0)
+accuracy = accuracy_score(df.iloc[testIndex:len(age), [13]], predicted)
+########################################################### 2.5
 #make 10 decision trees with some features
 featuresIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 featuresName = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
@@ -178,23 +163,16 @@ for x in range(0, 10):
     decisionTrees.append(clf)
     toDrops.append(toDrop)
 #########################   TEST ##########################
-right = 0
-wrong = 0
-print("&&&&&&&&&&&&&&&&&&&&&&")
+predicted = []
 for i in range(testIndex, len(age)):
     predicts = []
     for j in range(0, 10):
         predict = decisionTrees[j].predict([(testDF.drop(toDrops[j], axis=1)).loc[i]])
         predicts.append(predict)
     predicts = np.array(predicts)
-    if(np.mean(predicts)>0.5 and target[i] == 1):
-        right+=1
-    if(np.mean(predicts)<0.5 and target[i] == 0):
-        right+=1
-    if(np.mean(predicts)>0.5 and target[i] == 0):
-        wrong+=1
-    if(np.mean(predicts)<0.5 and target[i] == 1):
-        wrong+=1
-print(right, wrong)
-print(right/(right+wrong))
+    if(np.mean(predicts)>0.5):
+        predicted.append(1)
+    if(np.mean(predicts)<0.5):
+        predicted.append(0)
+accuracy = accuracy_score(df.iloc[testIndex:len(age), [13]], predicted)
 ###########################################################
