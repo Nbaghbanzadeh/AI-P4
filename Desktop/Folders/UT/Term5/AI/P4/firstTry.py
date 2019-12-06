@@ -45,7 +45,7 @@ for i in range(testIndex, len(age)):
         wrong+=1
 print(right, wrong)
 print(right/(right+wrong))
-###########################################################
+########################################################### 2.1 and 2.2
 #   5 groups of 150
 groups = []
 for i in range(0, 5):
@@ -82,16 +82,17 @@ for i in range(testIndex, len(age)):
         wrong+=1
 print(right, wrong)
 print(right/(right+wrong))
-###########################################################
+########################################################### 2.3
 features = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 test = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
-for k in range(0, 12):
+for k in range(0, 13):
     groupsCLF = []
-
     droped = test[0]
+    #removing feature
     test.pop(0)
     features.pop(0)
     for x in range(0, 5):
+        #making 5 decision tree
         df1 = pd.DataFrame(groups[x])
         X1 = df1.iloc[:, features]
         Y1 = df1.iloc[:, [13]]
@@ -120,3 +121,35 @@ for k in range(0, 12):
     ###########################################################
     features.append(k)
     test.append(droped)
+############################################################### 2.4
+featuresIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+featuresName = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+toChoose = []
+for i in range(0, 5):
+    index = int(random.randint(0, 12))
+    if(not (index in toChoose)):
+        toChoose.append(index)
+toDrop = []
+for i in range(0, 13):
+    if(not(i in toChoose)):
+        toDrop.append(featuresName[i])
+X = df1.iloc[:, toChoose]
+Y = df1.iloc[:, [13]]
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(X, Y)
+#########################   TEST ##########################
+right = 0
+wrong = 0
+for i in range(testIndex, len(age)):
+    predict = clf.predict([(testDF.drop(toDrop, axis=1)).loc[i]])
+    if(predict>0.5 and target[i] == 1):
+        right+=1
+    if(predict<0.5 and target[i] == 0):
+        right+=1
+    if(predict>0.5 and target[i] == 0):
+        wrong+=1
+    if(predict<0.5 and target[i] == 1):
+        wrong+=1
+print(right, wrong)
+print(right/(right+wrong))
+###########################################################
