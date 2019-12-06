@@ -83,3 +83,40 @@ for i in range(testIndex, len(age)):
 print(right, wrong)
 print(right/(right+wrong))
 ###########################################################
+features = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+test = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
+for k in range(0, 12):
+    groupsCLF = []
+
+    droped = test[0]
+    test.pop(0)
+    features.pop(0)
+    for x in range(0, 5):
+        df1 = pd.DataFrame(groups[x])
+        X1 = df1.iloc[:, features]
+        Y1 = df1.iloc[:, [13]]
+        c = tree.DecisionTreeClassifier()
+        c = c.fit(X1, Y1)
+        groupsCLF.append(c)
+    #########################   TEST ##########################
+    right = 0
+    wrong = 0
+    for i in range(testIndex, len(age)):
+        b = []
+        for j in range(0, 5):
+            a = groupsCLF[j].predict([(testDF.drop([test[0]], axis=1)).loc[i]])
+            b.append(a)
+        b = np.array(b)
+        if(np.mean(b)>0.5 and target[i] == 1):
+            right+=1
+        if(np.mean(b)<0.5 and target[i] == 0):
+            right+=1
+        if(np.mean(b)>0.5 and target[i] == 0):
+            wrong+=1
+        if(np.mean(b)<0.5 and target[i] == 1):
+            wrong+=1
+    print(droped, right, wrong)
+    print(right/(right+wrong))
+    ###########################################################
+    features.append(k)
+    test.append(droped)
