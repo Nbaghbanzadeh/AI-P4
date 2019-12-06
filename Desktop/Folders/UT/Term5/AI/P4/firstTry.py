@@ -4,16 +4,10 @@ import pandas as pd
 import numpy as np
 import random
 
-# Create a random subsample from the dataset with replacement
-def subsample(dataset, ratio=1.0):
-	sample = list()
-	n_sample = round(len(dataset) * ratio)
-	while len(sample) < n_sample:
-		index = random.randrange(len(dataset))
-		sample.append(dataset.loc[index])
-	return sample
-
 df = pd.read_csv('data.csv')
+testDF = pd.read_csv('test.csv')
+trainIndex = int(len(df['age'])*0.8)
+testIndex = int(len(df['age'])*0.8)+1
 age = df['age']
 sex = df['sex']
 cp = df['cp']
@@ -30,18 +24,62 @@ thal = df['thal']
 target = df['target']
 # X = [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
 # Y = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
-Y = df.iloc[:, [13]]
-X = df.iloc[:, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]]
+Y = df.iloc[0:trainIndex, [13]]
+X = df.iloc[0:trainIndex, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]]
 
 clf = tree.DecisionTreeClassifier()
 clf = clf.fit(X, Y)
 #print(clf.predict([[62, 0, 0, 138, 294, 1, 1, 106, 0, 1.9, 1, 3, 2]]))
-#########################   test the Decision Tree #############################################
+#########################   TEST ##########################
+right = 0
+wrong = 0
+for i in range(testIndex, len(age)):
+    predict = clf.predict([testDF.loc[i]])
+    if(predict>0.5 and target[i] == 1):
+        right+=1
+    if(predict<0.5 and target[i] == 0):
+        right+=1
+    if(predict>0.5 and target[i] == 0):
+        wrong+=1
+    if(predict<0.5 and target[i] == 1):
+        wrong+=1
+print(right, wrong)
+print(right/(right+wrong))
+###########################################################
 #   5 groups of 150
 groups = []
 for i in range(0, 5):
     group = []
     for i in range(0, 150):
-        index = random.randint(0, len(age)-1)
+        index = random.randint(0, trainIndex)
         group.append(df.loc[index])
     groups.append(group)
+#   Training each bag
+groupsCLF = []
+for i in range(0, 5):
+    df1 = pd.DataFrame(groups[i])
+    X1 = df1.iloc[:, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]]
+    Y1 = df1.iloc[:, [13]]
+    c = tree.DecisionTreeClassifier()
+    c = c.fit(X1, Y1)
+    groupsCLF.append(c)
+#########################   TEST ##########################
+right = 0
+wrong = 0
+for i in range(testIndex, len(age)):
+    b = []
+    for j in range(0, 5):
+        a = groupsCLF[j].predict([testDF.loc[i]])
+        b.append(a)
+    b = np.array(b)
+    if(np.mean(b)>0.5 and target[i] == 1):
+        right+=1
+    if(np.mean(b)<0.5 and target[i] == 0):
+        right+=1
+    if(np.mean(b)>0.5 and target[i] == 0):
+        wrong+=1
+    if(np.mean(b)<0.5 and target[i] == 1):
+        wrong+=1
+print(right, wrong)
+print(right/(right+wrong))
+###########################################################
