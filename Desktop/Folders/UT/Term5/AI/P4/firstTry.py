@@ -73,32 +73,25 @@ accuracy = accuracy_score(df.iloc[testIndex:len(age), [13]], predicted)
 features = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 test = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
 for k in range(0, 13):
-    groupsCLF = []
     droped = test[0]
     #removing feature
     test.pop(0)
     features.pop(0)
-    for x in range(0, 5):
-        #making 5 decision tree
-        df1 = pd.DataFrame(groups[x])
-        X1 = df1.iloc[:, features]
-        Y1 = df1.iloc[:, [13]]
-        c = tree.DecisionTreeClassifier()
-        c = c.fit(X1, Y1)
-        groupsCLF.append(c)
+    X = df.iloc[:, features]
+    Y = df.iloc[:, [13]]
+    c = tree.DecisionTreeClassifier()
+    c = c.fit(X, Y)
     #########################   TEST ##########################
     predicted = []
     for i in range(testIndex, len(age)):
         predicts = []
-        for j in range(0, 5):
-            predict = groupsCLF[j].predict([(df.drop(['target'], axis=1).drop([test[0]], axis=1)).loc[i]])
-            predicts.append(predict)
-        predicts = np.array(predicts)
-        if(np.mean(predicts)>0.5):
+        predict = c.predict([(df.drop(['target'], axis=1).drop([test[0]], axis=1)).loc[i]])
+        if(predict>0.5):
             predicted.append(1)
         else:
             predicted.append(0)
     accuracy = accuracy_score(df.iloc[testIndex:len(age), [13]], predicted)
+    #print(accuracy)
     ###########################################################
     features.append(k)
     test.append(droped)
@@ -127,6 +120,7 @@ for i in range(testIndex, len(age)):
     else:
         predicted.append(0)
 accuracy = accuracy_score(df.iloc[testIndex:len(age), [13]], predicted)
+print(accuracy)
 ########################################################### 2.5
 #make 10 decision trees with some features
 featuresIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
