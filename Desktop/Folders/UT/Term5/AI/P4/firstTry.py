@@ -38,6 +38,7 @@ for i in range(testIndex, len(age)):
     else:
         predicted.append(0)
 accuracy = accuracy_score(df.iloc[testIndex:len(age), [13]], predicted)
+#print("Decision Tree", accuracy)
 ########################################################### 2.1 and 2.2
 #   5 groups of 150
 groups = []
@@ -69,6 +70,7 @@ for i in range(testIndex, len(age)):
     else:
         predicted.append(0)
 accuracy = accuracy_score(df.iloc[testIndex:len(age), [13]], predicted)
+#print("Bagging", accuracy)
 ########################################################### 2.3
 features = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 test = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
@@ -99,11 +101,14 @@ for k in range(0, 13):
 featuresIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 featuresName = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
 toChoose = []
-for i in range(0, 5):
+n = 0
+while(n < 5):
     index = int(random.randint(0, 12))
     if(not (index in toChoose)):
         toChoose.append(index)
+        n += 1
 toDrop = []
+n = 0
 for i in range(0, 13):
     if(not(i in toChoose)):
         toDrop.append(featuresName[i])
@@ -120,19 +125,26 @@ for i in range(testIndex, len(age)):
     else:
         predicted.append(0)
 accuracy = accuracy_score(df.iloc[testIndex:len(age), [13]], predicted)
-print(accuracy)
+#print("Randomly choose five", accuracy)
 ########################################################### 2.5
-#make 10 decision trees with some features
+#make 500 decision trees with some features
 featuresIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 featuresName = ['age', 'sex', 'cp', 'trestbps', 'chol', 'fbs', 'restecg', 'thalach', 'exang', 'oldpeak', 'slope', 'ca', 'thal']
 decisionTrees = []
 toDrops = []
-for x in range(0, 10):
-    toChoose = []
-    for i in range(0, 5):
-        index = int(random.randint(0, 12))
-        if(not (index in toChoose)):
-            toChoose.append(index)
+toChooses = []
+for x in range(0, 500):
+    while(True):
+        toChoose = []
+        n = 0
+        while(n < 5):
+            index = int(random.randint(0, 12))
+            if(not (index in toChoose)):
+                n += 1
+                toChoose.append(index)
+        if(not (toChoose in toChooses)):
+            toChooses.append(toChoose)
+            break
     toDrop = []
     for i in range(0, 13):
         if(not(i in toChoose)):
@@ -147,7 +159,7 @@ for x in range(0, 10):
 predicted = []
 for i in range(testIndex, len(age)):
     predicts = []
-    for j in range(0, 10):
+    for j in range(0, len(decisionTrees)):
         predict = decisionTrees[j].predict([(df.drop(['target'], axis=1).drop(toDrops[j], axis=1)).loc[i]])
         predicts.append(predict)
     predicts = np.array(predicts)
@@ -156,4 +168,5 @@ for i in range(testIndex, len(age)):
     else:
         predicted.append(0)
 accuracy = accuracy_score(df.iloc[testIndex:len(age), [13]], predicted)
+#print("Forest", accuracy)
 ###########################################################
