@@ -1,0 +1,167 @@
+actor A extends B(0){
+  knownactors {
+  A a;
+  B b;
+  C a;
+}
+
+actorvars {
+    int i;
+    boolean odd;
+    string str;
+    string str;
+    int A[1];
+    string i;
+    int A[0];
+    int b[0];
+}
+
+msghandler initial(int i2) {
+    int i;
+    int i2;
+    i = i2;
+    self.foo(self.i2);
+    sender.bar(i + 3 + 4 < 5);
+    even = true;
+    a = x || y && e || z || w;
+}
+
+msghandler foo() {
+    if(odd == true) {
+        print(i * i + 1);
+    }
+    odd =  A[0];
+    i = (i++);
+}
+
+msghandler bar() {
+    a.foo();
+    if (true)
+    // nothing
+    if (false)
+        a = b + 2;
+    else {
+        print("sdfsdsd");
+    }
+}
+
+msghandler bar() {
+    b.bar();
+}
+}
+
+actor R extends G(5) {
+    knownactors {}
+    actorvars {}
+}
+
+actor G extends A(5) {
+    knownactors {}
+    actorvars {}
+}
+
+actor B extends C(4) {
+knownactors {}
+actorvars {}
+msghandler foo() {
+
+}
+
+}
+
+actor C extends A(5) {
+knownactors {
+A a;
+}
+
+actorvars {
+int i;
+boolean check;
+}
+
+msghandler initial(int foo) {
+
+}
+
+msghandler foo(string b, int foobar, int a[0]) {
+
+}
+
+msghandler boo() {
+
+}
+}
+
+
+
+actor D extends G(5) {
+knownactors {
+A a;
+}
+
+actorvars {
+int a;
+boolean check;
+}
+
+msghandler initial(int foo) {
+    int foo;
+    string b;
+    sender.a(self.b, 7);
+    for(a = 5; 2; i = 1)
+    if(1)
+    if(2)
+    if(3)
+    b = 7;
+    else
+    a=3;
+}
+
+msghandler afunc(string b, int foobar[8]) {
+
+}
+
+msghandler bfunc() {
+
+}
+}
+
+actor calculator extends calculator(5){
+knownactors{
+Taylor t;
+}
+actorvars{
+int latest_fact;
+}
+msghandler initial() {
+latest_fact = 0;
+}
+
+msghandler factorial(int n){
+int temp;
+temp = 1;
+for(;;){
+if(n == 0)
+break;
+temp = temp * n;
+n = n - 1;
+}
+latest_fact = temp;
+}
+
+msghandler get_fact(int n){
+self.factorial(n);
+if(sender == t)
+sender.pass(self.latest_fact);
+else
+print("can't send msg to known actor");
+}
+}
+
+main {
+A a1(a2):(0);
+A a1(a1):(1);
+A a3(a1):(1);
+}
+
+
