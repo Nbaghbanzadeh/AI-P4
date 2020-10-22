@@ -20,15 +20,15 @@ class SimpleDITest {
 		assertEquals(petRepoMock, diProvidedRepo);
 	}
 
-//	@Test
-//	public void testProvideByFunction() throws Exception {
-//		SimpleDI simpleDi = SimpleDI.getDIContainer();
-//		simpleDi.provideByAConstructorFunction(PetRepository.class, new Callable<Object>() {
-//			@Override
-//			public Object call() throws Exception {
-//				return mock(PetRepository.class);
-//			}
-//		});
-//		assertNotNull(simpleDi.getInstanceOf(PetRepository.class));
-//	}
+	@Test
+	public void testProvideByFunction() throws Exception {
+		SimpleDI simpleDi = SimpleDI.getDIContainer();
+		simpleDi.provideByAConstructorFunction(PetRepository.class, new Callable<Object>() {
+			@Override
+			public Object call() throws Exception {
+				return mock(PetRepository.class);
+			}
+		});
+		assertNotNull(simpleDi.getInstanceOf(PetRepository.class));
+	}
 }

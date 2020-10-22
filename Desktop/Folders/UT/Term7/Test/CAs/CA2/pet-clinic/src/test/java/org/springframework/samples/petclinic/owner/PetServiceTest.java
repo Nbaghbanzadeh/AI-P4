@@ -31,58 +31,130 @@ class PetServiceTest {
 		petService = new PetService(pets, ownerRepository, criticalLogger);
 	}
 
+	//	Null Inputs
+
+	@Test
+	public void testNewPetNullInput() {
+		Pet p = null;
+		try {
+			p = petService.newPet(null);
+			fail("null input was accepted in newPet");
+		}catch (Exception e) {
+			//Behavior
+			Mockito.verify(owner, Mockito.times(0)).getId();
+			Mockito.verify(owner, Mockito.times(0)).addPet(any(Pet.class));
+			//State
+			assertEquals(p, null);
+		}
+	}
+
+	@Test
+	public void testSavePetNullPet() {
+		try {
+			petService.savePet(null, owner);
+			fail("null input was accepted in savePet");
+		}catch (Exception e) {
+			//Behavior
+			Mockito.verify(pet, Mockito.times(0)).getId();
+			Mockito.verify(owner, Mockito.times(0)).addPet(any(Pet.class));
+			Mockito.verify(pets, Mockito.times(0)).save(any(Pet.class));
+		}
+	}
+
+	@Test
+	public void testSavePetNullOwner() {
+		try {
+			petService.savePet(pet, null);
+			fail("null input was accepted in savePet");
+		}catch (Exception e) {
+			//Behavior
+			Mockito.verify(pet, Mockito.times(1)).getId();
+			Mockito.verify(owner, Mockito.times(0)).addPet(any(Pet.class));
+			Mockito.verify(pets, Mockito.times(0)).save(any(Pet.class));
+		}
+	}
+
+	//	Valid Inputs
+
 	@Test
 	public void testFindOwnerValidInput() {
-
 		when(ownerRepository.findById(anyInt())).thenReturn(owner);
+		Owner check = null;
 		try {
-			petService.findOwner(1);
+			check = petService.findOwner(1);
 		}catch (Exception e) {
 			System.out.println(e);
 			fail("FAILED");
 		}
+		//Behavior
 		Mockito.verify(ownerRepository, Mockito.times(1)).findById(anyInt());
+		//
 		ArgumentCaptor<Integer> ownerId = ArgumentCaptor.forClass(Integer.class);
 		Mockito.verify(ownerRepository).findById(ownerId.capture());
 		Assert.assertEquals(java.util.Optional.of(1), java.util.Optional.ofNullable(ownerId.getValue()));
+
+		//State
+		assertEquals(check, owner);	//	????
 	}
 
 	@Test
 	public void testNewPetValidInput() {
-
 		try {
 			petService.newPet(owner);
 		}catch (Exception e) {
 			System.out.println(e);
 			fail("FAILED");
 		}
+		//Behavior
 		Mockito.verify(owner, Mockito.times(1)).getId();
 		Mockito.verify(owner, Mockito.times(1)).addPet(any(Pet.class));
+		//
+		ArgumentCaptor<Pet> p = ArgumentCaptor.forClass(Pet.class);
+		Mockito.verify(owner).addPet(p.capture());
+		Assert.assertEquals(Pet.class, p.getValue());
+		//State
+//		assertEquals(p, Pet.class);
 	}
 
 	@Test
 	public void testFindPetValidInput() {
-
+		when(pets.get(anyInt())).thenReturn(pet);
+		Pet p = null;
 		try {
-			petService.findPet(1);
+			p = petService.findPet(1);
 		}catch (Exception e) {
 			System.out.println(e);
 			fail("FAILED");
 		}
+		//Behavior
 		Mockito.verify(pets, Mockito.times(1)).get(anyInt());
+		//
+		ArgumentCaptor<Integer> petId = ArgumentCaptor.forClass(Integer.class);
+		Mockito.verify(pets).get(petId.capture());
+		Assert.assertEquals(java.util.Optional.of(1), java.util.Optional.ofNullable(petId.getValue()));
+		//	State
+		assertEquals(p, pet);
 	}
 
 	@Test
 	public void testSavePetValidInput() {
-
+		Integer ownerPetSize = owner.getPets().size();
 		try {
 			petService.savePet(pet, owner);
 		}catch (Exception e) {
 			System.out.println(e);
 			fail("FAILED");
 		}
+		//Behavior
 		Mockito.verify(pet, Mockito.times(1)).getId();
-		Mockito.verify(owner, Mockito.times(1)).addPet(pet);
-		Mockito.verify(pets, Mockito.times(1)).save(pet);
+		Mockito.verify(owner, Mockito.times(1)).addPet(any(Pet.class));
+		Mockito.verify(pets, Mockito.times(1)).save(any(Pet.class));
+		//
+		ArgumentCaptor<Pet> repoArgumentCaptor = ArgumentCaptor.forClass(Pet.class);
+		Mockito.verify(pets).save(repoArgumentCaptor.capture());
+		Assert.assertEquals(pet, repoArgumentCaptor.getValue());
+		//State
+//		assertEquals(owner.getPets().size() - ownerPetSize, 1);
+
 	}
 }

@@ -12,21 +12,21 @@ import java.util.concurrent.Callable;
 public class SimpleDI {
 
 	@Autowired
-	private PetRepository petRepository;
+	private Object obj;
 	public static SimpleDI getDIContainer() throws Exception {
 		// todo return the singleton instance of your implementation of dependency injection container
 		return new SimpleDI();
 	}
 
-	public void provideByInstance(Class<PetRepository> petRepositoryClass, PetRepository petRepository) {
-		this.petRepository = petRepository;
+	public void provideByInstance(Class<?> typeClass, Object instanceOfType) {
+		this.obj = instanceOfType;
 	}
 
-//	public void provideByAConstructorFunction(Class<?> typeClass, Callable<Object> providerFunction) {
-//		this.petRepository.providerFunction()
-//	}
+	public void provideByAConstructorFunction(Class<?> typeClass, Callable<Object> providerFunction) {
+		this.obj = providerFunction;
+	}
 
-	public Object getInstanceOf(Class<PetRepository> petRepositoryClass) throws Exception {
-		return this.petRepository;
+	public Object getInstanceOf(Class<?> requiredType) throws Exception {
+		return this.obj;
 	}
 }

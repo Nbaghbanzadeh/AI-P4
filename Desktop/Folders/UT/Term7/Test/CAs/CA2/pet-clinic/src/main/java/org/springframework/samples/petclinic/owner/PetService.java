@@ -31,6 +31,7 @@ public class PetService {
 		log.info("add pet for owner {}", owner.getId());
 		Pet pet = new Pet();
 		owner.addPet(pet);
+//		System.out.println(owner.getId());
 		return pet;
 	}
 
